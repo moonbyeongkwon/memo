@@ -84,5 +84,73 @@
 				}
 			});
 		});
+		
+		// 회원가입
+		$("#signUpForm").on('submit', function(e) {
+			e.preventDefault();	// submit 기능 멈춤
+			
+			//alert("회원가입");
+			
+			//validation
+			let loginId = $("input[name=loginId]").val().trim();
+			let password = $("#password").val();
+			let confirmPassword = $("#confirmPassword").val();
+			let name = $("#name").val().trim();
+			let email = $("#email").val().trim();
+			
+			if (!loginId) {
+				alert("아이디를 입력하세요.");
+				return false;
+			}
+			
+			if (!password || !confirmPassword) {
+				alert("비밀번호를 입력하세요.");
+				return false;
+			}
+			
+			if (password != confirmPassword) {
+				alert("비밀번호가 일치하지 않습니다.");
+				return false;
+			}
+			
+			if (!name) {
+				alert("이름을 입력하세요.")
+				return false;
+			}
+			
+			if (!email) {
+				alert("이메일을 입력하세요.");
+				return false;				
+			}
+			
+			// 중복확인 후 사용 가능한 아이디인지
+			// 잘못:	idCheckOk에 d-none이 있을 때
+			if ($("#idCheckOk").hasClass("d-none")) {
+				alert("아이디 중복확인을 해주세요.");
+				return false;
+			}
+			
+			//alert("완료");
+			
+			// 1) 서버 전송: submit
+			//$(this)[0].submit();	// 화면이동이 된다.
+			
+			//2) AJAX 통신: 화면 이동되지 않음, 콜백에서 이동 => 응답값 JSON
+			let url = $(this).attr("action");
+			console.log(url);
+			let params = $(this).serialize(); //	form태그에 있는 name 속성값으로 파라미터 구성
+			console.log(params);
+			
+			$.post(url, params)	//	request
+			.done(function(data) { //	response callback
+				if (data.code == 200) {
+					alert("가입을 환영합니다. 로그인 해주세요.");
+					location.href = "/user/sign-in-view"; //	로그인 화면 이동
+				} else {
+					// 로직 실패
+					alert(data.error_message);
+				}
+			});
+		});
 	});
 </script>
