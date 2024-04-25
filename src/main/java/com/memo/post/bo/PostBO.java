@@ -19,25 +19,32 @@ public class PostBO {
 	@Autowired
 	private FileManagerService fileManager;
 	
-	
-	//	input:	userId
-	//	output:	글 목록 List<Post>
-	public List<Post> getPostByUserId(int userId) {
+	// input: userId(로그인 된 사람, 글쓴이)
+	// output: 글 목록 List<Post>
+	public List<Post> getPostListByUserId(int userId) {
 		return postMapper.selectPostListByUserId(userId);
 	}
 	
-	//	input:	제목, 내용, 글쓴이 번호, 글쓴이 로그인 아이디, 멀티파트 파일
-	//	output:	int(성공한 행 개수)
-	public int addPost(int userId, String userLoginId, String subject, String content, MultipartFile file) {
+	// input: 제목, 내용, 글쓴이 번호, 글쓴이 로그인 아이디, 멀티파트파일
+	// output: int(성공 행 개수)
+	public int addPost(int userId, String userLoginId, String subject, 
+			String content, MultipartFile file) {
 		
 		String imagePath = null;
 		
-		//	업로드 할 이미지가 있을 때 업로드
+		// 업로드 할 이미지가 있을 때 업로드
 		if (file != null) {
 			imagePath = fileManager.saveFile(userLoginId, file);
 		}
-			
 		
 		return postMapper.insertPost(userId, subject, content, imagePath);
 	}
+	
+	public Post getPostByPostIdUserId(int postId, int userId) {
+		return postMapper.selectPostByPostIdUserId(postId, userId);
+	}
 }
+
+
+
+
