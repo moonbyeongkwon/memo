@@ -9,10 +9,13 @@ import java.nio.file.Paths;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
 
+import lombok.extern.slf4j.Slf4j;
+
+@Slf4j
 @Component // spring bean
 public class FileManagerService {
 	
-	public static final String FILE_UPLOAD_PATH = "D:\\신보람\\6_spring_project\\memo\\workspace\\images/"; // 학원용
+	public static final String FILE_UPLOAD_PATH = "D:\\문병권\\6_spring_project\\memo\\workspace\\images/"; // 학원용
 	//public static final String FILE_UPLOAD_PATH = "D:\\신보람\\6_spring_project\\memo\\workspace\\images/"; // 집용
 	
 	// input: file 원본, 로그인 된 사람 아이디(userLoginId)
@@ -26,6 +29,7 @@ public class FileManagerService {
 		File directory = new File(filePath);
 		if (directory.mkdir() == false) {
 			// 폴더 생성 실패시 이미지 경로 null 리턴
+			log.info("[파일매니저 업로드] 폴더 생성 실패. path:{}", filePath);
 			return null;
 		}
 		
@@ -36,7 +40,7 @@ public class FileManagerService {
 			Path path = Paths.get(filePath + file.getOriginalFilename());
 			Files.write(path, bytes); // 실제 파일 업로드
 		} catch (IOException e) {
-			e.printStackTrace();
+			log.error("[파일 업로드] 파일업로드 실패. path:{}", filePath);
 			return null;
 		}
 		
@@ -44,6 +48,35 @@ public class FileManagerService {
 		// 주소는 이렇게 될 것이다.(예언)
 		//     http://localhost   /images/aaaa_18234789023/sun.png
 		return "/images/" + directoryName + file.getOriginalFilename();
+	}
+	
+	//	input: imagePath
+	//	output: X
+	public void deleteFile(String imagePath) {	// /images/aaaa_1714388455833/duck-8445697_640.jpg
+		//	FILE_UPLOAD_PATH = "D:\\문병권\\6_spring_project\\memo\\workspace\\images/aaaa_1714388455833/duck-8445697_640.jpg"
+		//	주소 패시에 겹ㅊ치게 되는 /images/ 는 지운다.
+		Path path = Paths.get(FILE_UPLOAD_PATH + imagePath.replace("/images/", ""));
+		
+		//	삭제할 이미지가 존재하는가?
+		if (Files.exists(path)) {
+			//	이미지 파일 삭제
+			try {
+				Files.delete(path);
+			} catch (IOException e) {
+				log.warn("[파일 매니저] 이미지 삭제 실패. path:{}", path.toString());
+				return;
+			}
+			
+			//	폴더(디렉토리) 삭제
+			path = path.getParent();
+			if (Files.exists(path)) {
+				try {
+					Files.delete(path);
+				} catch (IOException e) {
+					log.warn("[파일 매니저] 폴더 삭제 실패. path:{}", path.toString());
+				}
+			}
+		}
 	}
 }
 

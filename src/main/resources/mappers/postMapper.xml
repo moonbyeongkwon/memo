@@ -62,6 +62,27 @@
 			`userId` = #{userId}
 			AND `id` = #{postId}
 	</select>
+	
+	<update id="updatePostByPostId" parameterType="map">
+		UPDATE `post`
+		SET
+			`subject` = #{subject}
+			, `content` = #{content}
+			<if test="imagePath != null">
+			, `imagePath` = #{imagePath}
+			</if>
+			, `updatedAt` = NOW()
+		WHERE
+			`id` = #{postId}
+	</update>
+	
+	<delete id="deletePostById" parameterType="int">
+		DELETE
+		FROM
+			`post`
+		WHERE
+			`id` = #{post.id}
+	</delete>
 </mapper>
 
 
