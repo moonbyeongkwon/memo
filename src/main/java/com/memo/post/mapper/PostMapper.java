@@ -21,6 +21,10 @@ public interface PostMapper {
 			@Param("direction") String direction,
 			@Param("limit") int limit);
 	
+	public int selectPostIdByUserIdSort(
+			@Param("userId") int userId,
+			@Param("sort") String sort);
+	
 	public int insertPost(
 			@Param("userId") int userId, 
 			@Param("subject") String subject, 

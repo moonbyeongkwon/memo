@@ -1,8 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
-<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>    
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@ taglib prefix="fmt" uri="http://java.sun.com/jsp/jstl/fmt" %>
-
 <div class="w-50">
 	<h1>글 목록</h1>
 	
@@ -20,15 +19,30 @@
 			<tr>
 				<td>${post.id}</td>
 				<td><a href="/post/post-detail-view?postId=${post.id}">${post.subject}</a></td>
-				<td><fmt:formatDate value="${post.createdAt}" pattern="yyyy년 M월 d일 HH:mm:ss"/></td>
+				<td><fmt:formatDate value="${post.createdAt}" pattern="yyyy년 M월 d일 HH:mm:ss"/> </td>
 				<td><fmt:formatDate value="${post.updatedAt}" pattern="yyyy년 M월 d일 HH:mm:ss"/></td>
 			</tr>
 			</c:forEach>
 		</tbody>
 	</table>
 	
+	<%-- 페이징 --%>
+	<div class="text-center">
+		<c:if test="${prevId ne 0}">
+		<a href="/post/post-list-view?prevId=${prevId}" class="mr-5">&lt;&lt; 이전</a>
+		</c:if>
+		<c:if test="${nextId != 0}">
+		<a href="/post/post-list-view?nextId=${nextId}">다음 &gt;&gt;</a>
+		</c:if>
+	</div>
+	
 	<%-- 글쓰기 버튼 --%>
 	<div class="d-flex justify-content-end">
 		<a href="/post/post-create-view" class="btn btn-warning">글쓰기</a>
 	</div>
 </div>
+
+
+
+
+

@@ -1,5 +1,6 @@
 package com.memo.post.bo;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -38,6 +39,15 @@ public class PostBO {
 		Integer standardId = null; // 기준이 되는 postId
 		String direction = null; // 방향
 		if (prevId != null) { // 2) 이전
+			standardId = prevId;
+			direction = "prev";
+			
+			List<Post> postList = postMapper.selectPostListByUserId(userId, standardId, direction, POST_MAX_SIZE);
+			
+			//	reverse list 5 6 7 => 7 6 5
+			Collections.reverse(postList);	//	뒤집고 저장
+			
+			return postList;
 			
 		} else if (nextId != null) { // 1) 다음
 			standardId = nextId;
@@ -46,6 +56,18 @@ public class PostBO {
 		
 		// 3) 페이징 정보 없음, 1) 다음
 		return postMapper.selectPostListByUserId(userId, standardId, direction, POST_MAX_SIZE);
+	}
+	
+	//	이전 페이지의 마지막인가?
+	public boolean isPrevLastPageByUserId(int userId, int prevId) {
+		int postId = postMapper.selectPostIdByUserIdSort(userId, "DESC");
+		return postId == prevId;	//	같으면 마지막
+	}
+	
+//	다음 페이지의 마지막인가?
+	public boolean isNextLastPageByUserId(int userId, int nextId) {
+		int postId = postMapper.selectPostIdByUserIdSort(userId, "ASC");
+		return postId == nextId;	//	같으면 마지막
 	}
 	
 	// input: 제목, 내용, 글쓴이 번호, 글쓴이 로그인 아이디, 멀티파트파일
