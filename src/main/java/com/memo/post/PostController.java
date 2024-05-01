@@ -22,7 +22,10 @@ public class PostController {
 	private PostBO postBO;
 
 	@GetMapping("/post-list-view")
-	public String postListView(Model model, HttpSession session) {
+	public String postListView(
+			@RequestParam(value = "prevId", required = false) Integer prevIdParam,
+			@RequestParam(value = "nextId", required = false) Integer nextIdParam,
+			Model model, HttpSession session) {
 		// 로그인 여부 조회
 		Integer userId = (Integer)session.getAttribute("userId");
 		if (userId == null) {
@@ -30,7 +33,16 @@ public class PostController {
 			return "redirect:/user/sign-in-view";
 		}
 		
-		List<Post> postList = postBO.getPostListByUserId(userId);
+		List<Post> postList = postBO.getPostListByUserId(userId, prevIdParam, nextIdParam);
+		int prevId = 0;
+		int nextId = 0;
+		if (postList.isEmpty() == false) { // postList가 []때 오류 방지 위함
+			prevId = postList.get(0).getId(); // 리스트의 첫번째 글번호
+			nextId = postList.get(postList.size() - 1).getId(); // 리스트의 마지막 글번호
+		}
+		
+		model.addAttribute("prevId", prevId);
+		model.addAttribute("nextId", nextId);
 		model.addAttribute("postList", postList);
 		model.addAttribute("viewName", "post/postList");
 		return "template/layout";
@@ -47,6 +59,13 @@ public class PostController {
 		return "template/layout";
 	}
 	
+	/**
+	 * 글 상세 화면
+	 * @param postId
+	 * @param session
+	 * @param model
+	 * @return
+	 */
 	@GetMapping("/post-detail-view")
 	public String postDetailView(
 			@RequestParam("postId") int postId,
